@@ -1,0 +1,81 @@
+{ 
+
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#", 
+
+    "contentVersion": "1.0.0.0", 
+
+    "resources": [ 
+
+        { 
+
+            "type": "Microsoft.Web/serverfarms", 
+
+            "sku": { 
+
+                "tier": "Dynamic", 
+
+                "name": "Y1", 
+
+                "size": "Y1", 
+
+                "family": "Y", 
+
+                "capacity": 0 
+
+            }, 
+
+            "apiVersion": "2022-09-01", 
+
+            "name": "xxxxxxxx", 
+
+            "location": "eastus", 
+
+            "properties": { 
+
+                "name": "xxxxxxxxxx", 
+
+                "perSiteScaling": false, 
+
+                "reserved": true, 
+
+                "targetWorkerCount": 0, 
+
+                "targetWorkerSizeId": 0 
+
+            }, 
+
+            "kind": "linux" 
+
+        } 
+
+    ], 
+
+    "parameters": { 
+
+        "appServicePlanName": { 
+
+            "type": "string"
+
+        }, 
+
+        "skuTier": { 
+
+            "type": "string" 
+
+        }, 
+
+        "skuName": { 
+
+            "type": "string" 
+
+        }, 
+
+        "location": { 
+
+            "type": "string" 
+
+        } 
+
+    } 
+
+} 

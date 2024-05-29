@@ -1,0 +1,36 @@
+jobs:
+- job: updateinboud
+  displayName: Atualiza
+  pool:
+    vmImage: 'ubuntu-latest'
+    
+  steps:
+  - task: PowerShell@2
+    displayName: 'Leitura do arquivo variaveis.json'
+    inputs:
+      azureSubscription: 'xxxxxxxxxxxx'
+      targetType: 'inline'
+      script: |
+        $variaveisJson = Get-Content -Raw -Path $(Build.SourcesDirectory)/inboundnsg/variaveis.json | ConvertFrom-Json
+        $variaveisJson
+        $variaveisJson | ForEach-Object {
+          #$ruleName = $_.ruleName
+          $value = $_.ruleName         
+          Write-Host "##vso[task.setvariable variable=ruleName;]$value"
+          #$myIp = $_.myIp
+          $value2 = $_.myIp         
+          Write-Host "##vso[task.setvariable variable=myIp;]$value2"
+          #$priorityNumber = $_.priorityNumber
+          $value3 = $_.priorityNumber         
+          Write-Host "##vso[task.setvariable variable=priorityNumber;]$value3"
+        }
+  - script: 'echo Variável 1: $(ruleName) - Variável 2: $(myIp) - - Variável 3: $(priorityNumber)'
+
+  - task: AzurePowerShell@5
+    displayName: 'Atualização e/ou Inclusão de novo IP'
+    inputs:
+      azureSubscription: 'xxxxxxxxxxxx'
+      scriptType: filePath
+      scriptPath: $(Build.SourcesDirectory)/inboundnsg/addinboundip.ps1
+      azurePowerShellVersion: latestVersion
+      scriptArguments: '-ruleName $(ruleName) -myIp $(myIp) -priorityNumber $(priorityNumber)'

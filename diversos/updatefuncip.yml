@@ -1,0 +1,67 @@
+name: Atualização de Regra
+parameters:
+  - name: ruleName
+    displayName: 'Defina seu usuário'
+    type: string
+    values:
+    - usuario1
+    - usuario2
+    - usuario3
+    - usuario4
+    - usuario5
+
+  - name: myIp
+    displayName: 'Informe seu IP atualizado'
+    type: string
+
+jobs:
+- job: updateinboud
+  displayName: Atualiza
+  pool:
+    vmImage: 'ubuntu-latest'
+    
+  steps:
+  - powershell: |
+      $priorityNumber = 0
+      if ("${{parameters.myIp}}" -like "0.0*" -or "${{parameters.myIp}}" -like "*/*") {
+        Write-Host "AVISO: O valor do IP não pode ser igual a 0.0.0.0 e conter CIDR ("/x"). Operação proibida."
+        exit 1
+      } elseif ("${{parameters.ruleName}}" -eq "usuario1") {
+        Write-Host "Definindo priorityNumber como 100"
+        $priorityNumber = 100
+      } elseif ("${{parameters.ruleName}}" -eq "usuario2") {
+        Write-Host "Definindo priorityNumber como 101"
+        $priorityNumber = 101
+      } elseif ("${{parameters.ruleName}}" -eq "usuario3") {
+        Write-Host "Definindo priorityNumber como 102"
+        $priorityNumber = 102
+      } elseif ("${{parameters.ruleName}}" -eq "usuario4") {
+        Write-Host "Definindo priorityNumber como 103"
+        $priorityNumber = 103
+      } elseif ("${{parameters.ruleName}}" -eq "usuario5") {
+        Write-Host "Definindo priorityNumber como 104"
+        $priorityNumber = 104
+      } 
+      Write-Host "Finalizado"
+      Write-Output "##vso[task.setvariable variable=priorityNumber]$priorityNumber"
+    displayName: 'Definir prioridade baseado pelo nome da regra'
+
+
+#  - task: AzurePowerShell@5
+#    displayName: 'Atualização e/ou Inclusão de novo IP'
+#    inputs:
+#      azureSubscription: 'xxxxxxxxxxxxxxxxxx'
+#      scriptType: filePath
+#      scriptPath: $(Build.SourcesDirectory)/inboundnsg/addinboundip.ps1
+#      azurePowerShellVersion: latestVersion
+#      scriptArguments: '-ruleName ${{parameters.ruleName}} -myIp ${{parameters.myIp}} -priorityNumber $(priorityNumber)'
+
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: 'xxxxxxxxxxxxxxx'
+      scriptType: 'ps'
+      scriptLocation: 'scriptPath'
+#      arguments: '$(AZURE_STORAGE_ACCOUNT) $(AZURE_STORAGE_KEY)'
+      scriptArguments: '-ruleName ${{parameters.ruleName}} -myIp ${{parameters.myIp}} -priorityNumber $(priorityNumber)'
+#      inlineScript: './scripts/publish.ps1 $1 $2'
+      scriptPath: $(Build.SourcesDirectory)/funcIP/updateIPoutbound.ps1

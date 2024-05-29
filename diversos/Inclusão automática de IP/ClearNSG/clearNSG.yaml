@@ -1,0 +1,14 @@
+jobs:
+- job: LimpezaNSG
+  displayName: Remove
+  pool:
+    vmImage: 'ubuntu-latest'
+    
+  steps:
+  - task: AzurePowerShell@5
+    displayName: 'Limpeza de Segurança'
+    inputs:
+      azureSubscription: 'xxxxxxxxxxxxxx'
+      scriptType: filePath
+      scriptPath: $(Build.SourcesDirectory)/ClearNSG/clearnsg.ps1
+      azurePowerShellVersion: latestVersion
